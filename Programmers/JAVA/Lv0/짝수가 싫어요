@@ -1,1 +1,23 @@
 
+class Solution {
+    public int[] solution(int n) {
+        int[] answer;
+        int k = 0; // 배열 순서용
+        
+        if( n % 2 == 0){
+            answer = new int[n/2]; 
+            // 새로 배열 생성 - 짝수일 경우
+        }else{
+            answer = new int[n/2 + 1];
+        }
+        
+        for(int i = 0; i <= n; i++){
+            if( i % 2 == 1){ // 홀수 경우
+                answer[k] = i;
+                k++;
+            }
+        }
+        
+        return answer;
+    }
+}
