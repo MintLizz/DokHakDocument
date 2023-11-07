@@ -1,0 +1,23 @@
+class Solution {
+    public int solution(int[] num_list) {
+        int answer = 0;
+        int mul = 1;
+        int sum = 0;
+        
+        for(int i=0; i< num_list.length; i++){
+            mul *= num_list[i]; 
+        };
+        
+        for(int j = 0; j< num_list.length; j++){
+            sum += num_list[j];
+        };
+        
+        if(mul > (sum * sum)){
+            answer = 0;
+        }else if(mul < (sum * sum)){
+            answer = 1;
+        }
+        
+        return answer;
+    }
+}
