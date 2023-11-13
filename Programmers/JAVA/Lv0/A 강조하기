@@ -1,0 +1,13 @@
+class Solution {
+    public String solution(String myString) {
+        String answer = "";
+        
+        String result = "";
+        
+        result = myString.toLowerCase();
+        
+        answer = result.replaceAll("a", "A");
+        
+        return answer;
+    }
+}
