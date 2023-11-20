@@ -1,0 +1,37 @@
+class Solution {
+    public int solution(String[] babbling) {
+        int answer = 0;
+        
+         for(int i=0; i < babbling.length; i++){
+             babbling[i] = babbling[i].replaceFirst("aya", "0");
+             babbling[i] = babbling[i].replaceFirst("ye", "0");
+             babbling[i] = babbling[i].replaceFirst("woo", "0");
+             babbling[i] = babbling[i].replaceFirst("ma", "0");        
+             babbling[i] = babbling[i].replace("0", "");      
+            if(babbling[i].equals("")){
+                answer++;
+            }
+         }
+        
+        return answer;
+    }
+}
+
+
+
+replaceAll 바꾸고 싶은 문자로 문자열 전부 치환해줌
+String a = "무궁화. 삼천리. 화려강산. 대한사람. 대한으로. 길이. 보전하세 ";
+a = a.replace(".", "/");
+//결과값 : /////////////////////////////////////
+. 이 정규식으로 모든 문자를 의미하기 때문에 나타나는 현상임
+
+
+replace
+바꾸고 싶은 문자로 문자열 치환해줌
+//결과값 : 무궁화/ 삼천리/ 화려강산/ 대한사람/ 대한으로/ 길이/ 보전하세
+
+replaceFirst
+자신이 바꾸고 ㅅ싶은 문자열이 처음으로 해당할때만 치환함
+a= a.replaceFirst("대한", "민국");
+String a = "무궁화 삼천리 화려강산 대한사람 대한으로 길이 보전하세 ";
+//결과값 : 무궁화 삼천리 화려강산 민국사람 대한으로 길이 보전하세
