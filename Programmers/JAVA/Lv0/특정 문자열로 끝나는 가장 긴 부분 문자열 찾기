@@ -1,0 +1,19 @@
+class Solution {
+    public String solution(String myString, String pat) {
+        String answer = "";
+
+        int index = myString.lastIndexOf(pat);
+        answer = myString.substring(0, index) + pat;
+        
+        return answer;
+    }
+}
+
+여기서 substring은 (0,3) : n이 0부터 3개 까지만 자름
+
+lastIndexOf(pat) : 이거는 pat이라는 문자를 맨 뒤에서부터 자름
+
+        String myString = "AbCdEFG";
+        String pat = "dE";
+이거인 경우 int index 는 뒤에서부터 가기 때문에 3이 나옴
+그럼 0부터 3개 단어만 나옴
