@@ -1,0 +1,19 @@
+class Solution {
+    public String solution(String my_string, int s, int e) {
+        String answer = "";
+        
+        String abc = my_string.substring(s, e+1);
+        
+        StringBuffer sb = new StringBuffer(abc);
+        String result = sb.reverse().toString();
+        
+        answer = my_string.replaceAll(abc, result);
+        
+        return answer;
+    }
+}
+
+
+결국에는 특정 문자열을 바꾼다 = substring( i, n);
+그 후 바꾼 문자열 sb로 변환 하고 뒤집는다.
+그 후 replaceAll로 변환한다.
