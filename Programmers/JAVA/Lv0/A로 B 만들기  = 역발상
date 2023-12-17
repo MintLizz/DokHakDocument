@@ -1,0 +1,19 @@
+    import java.util.Arrays;
+class Solution {
+
+    public int solution(String before, String after) {
+        int answer = 0;
+        
+        char[] before1 = before.toCharArray();
+        char[] after1 = after.toCharArray();
+        
+        Arrays.sort(before1);
+        Arrays.sort(after1);
+        
+        before = new String(before1);
+        after  = new String(after1);
+        
+        return (before.equals(after))? 1 : 0;
+
+    }
+}
