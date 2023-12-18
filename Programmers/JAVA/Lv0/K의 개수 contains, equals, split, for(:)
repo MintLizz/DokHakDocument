@@ -1,0 +1,20 @@
+class Solution {
+    public int solution(int i, int j, int k) {
+        int answer = 0;
+        
+        String arr1 = String.valueOf(k);
+        for(int a = i; a <= j; a++){
+            String arr2 = String.valueOf(a);
+            if(arr2.contains(arr1)){
+                String[] result = arr2.split("");
+                for(String array : result){
+                    if(array.equals(arr1)){
+                        answer++;
+                    }
+                }
+            }
+        }
+        
+        return answer;
+    }
+}
