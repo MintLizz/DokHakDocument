@@ -1,0 +1,17 @@
+class Solution {
+    public int solution(int n) {
+        int answer = 1;
+        int arr = 1;
+        for(int i=1; i <= n; i++){
+            arr *= i;
+            if(arr == n){
+                answer = arr;
+            }else if(arr > n){
+                answer = i-1;
+                break;
+            }
+        }
+        
+        return answer;
+    }
+}
