@@ -1,0 +1,18 @@
+class Solution {
+    public int solution(String myString, String pat) {
+        int answer = 0;
+        
+        for(int i= myString.length() -1; i >= 0; i--){
+            String arr = myString.substring(0, i+1);
+            if(arr.endsWith(pat)){
+                answer++;
+            }
+        }
+        
+        return answer;
+    }
+}
+
+
+
+contain을 하게 되면 개수가 안맞을 수 있다.
