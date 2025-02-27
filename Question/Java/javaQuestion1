@@ -72,3 +72,19 @@ List는 ArrayList로 받을 수 있지만 / ArrayList는 ArrayList로만 받아�
 - 자바 5부터 시작됨
 int[] numbers = {1, 2, 3, 4, 5};
 for (int number : numbers) { System.out.println(number); }
+
+
+2025.02.27 목요일
+
+1. 상속 extends 란
+상위 클래스(부모) 에서 하위클래스(자식) 에게 본인의 메소드나 변수를 사용할 수 있게 해주는 것
+ex) 
+public class Employee{
+  protected String name; // protected는 하위클래스가 상위 클래스의 접근을 허용하는 접근권한
+}
+public class RempVO extends Employee{
+public RempVO() {
+  super() // super는 상위클래스의 생성자를 호출
+}
+RempVO vo = new RempVO();
+vo.name;
