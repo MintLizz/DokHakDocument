@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>POS 시스템</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 헤더 -->
+<div class="header">
+  <div style="display:flex;align-items:center;gap:12px">
+    <span class="logo">POS</span>
+    <span style="font-size:13px;color:var(--muted)">내 매장</span>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px">
+    <button class="htab active" onclick="switchView('sell')">판매</button>
+    <button class="htab" onclick="switchView('inventory')">재고 관리</button>
+    <button class="htab" id="htab-cancel" onclick="switchView('cancel')">거래 내역</button>
+    <button class="htab" onclick="switchView('history')">판매 기록</button>
+    <span class="clock" id="clock"></span>
+  </div>
+</div>
+
+<!-- ══ 판매 뷰 ══ -->
+<div class="main" id="view-sell" style="display:grid">
+  <div class="left-panel">
+    <div class="cat-bar" id="cat-bar"></div>
+    <div class="product-area" id="product-area"></div>
+  </div>
+  <div class="order-panel">
+    <div class="order-hdr">
+      <span class="order-title">주문 내역</span>
+      <button class="btn-clr" onclick="clearCart()">전체 삭제</button>
+    </div>
+    <div class="order-list" id="order-list"><div class="oempty">상품을 선택하면<br>여기에 담겨요</div></div>
+    <div class="order-footer">
+      <div class="srow"><span class="slabel">상품 수</span><span class="sval" id="item-count">0개</span></div>
+      <hr class="dv">
+      <div class="srow total"><span class="slabel">합계</span><span class="sval" id="total-amount">0원</span></div>
+      <button class="btn-pay" id="btn-pay" onclick="openPayModal()" disabled>결제 완료</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 재고 관리 뷰 ══ -->
+<div class="view" id="view-inventory">
+  <div class="sec-title">카테고리 관리</div>
+  <div class="card">
+    <div style="display:grid;grid-template-columns:1fr auto;gap:10px;align-items:flex-end;margin-bottom:10px">
+      <div class="field"><label>카테고리 이름</label><input type="text" id="inp-cat-name" placeholder="예: 음료, 음식, 디저트"></div>
+      <button class="btn-add" onclick="addCategory()" style="height:38px">+ 추가</button>
+    </div>
+    <div style="margin-bottom:8px">
+      <div style="font-size:12px;color:var(--muted);margin-bottom:6px">색상 선택</div>
+      <div class="swatch-row" id="swatch-row"></div>
+    </div>
+    <div class="cat-mgr-grid" id="cat-mgr-grid"></div>
+  </div>
+  <div class="sec-title">상품 등록</div>
+  <div class="card">
+    <div class="form-row3">
+      <div class="field"><label>상품명</label><input type="text" id="inp-name" placeholder="예: 아메리카노"></div>
+      <div class="field"><label>가격 (원)</label><input type="number" id="inp-price" placeholder="3000" min="0"></div>
+      <div class="field">
+        <label>수량</label>
+        <div style="display:flex;gap:6px;align-items:center">
+          <input type="number" id="inp-stock" placeholder="50" min="0" style="flex:1">
+          <button id="inf-toggle" onclick="toggleInfNew()" title="무한 재고로 설정"
+            style="padding:6px 10px;border:1px solid var(--border);border-radius:var(--radius-sm);background:var(--surface2);color:var(--muted);font-size:14px;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s;height:38px">
+            ∞
+          </button>
+        </div>
+      </div>
+    </div>
+    <div style="margin-bottom:12px">
+      <div style="font-size:12px;color:var(--muted)">카테고리 선택</div>
+      <div class="cat-sel-grid" id="cat-sel-grid"><span style="font-size:13px;color:var(--hint)">먼저 카테고리를 만들어주세요</span></div>
+    </div>
+    <div style="display:flex;align-items:flex-end;gap:10px">
+      <div class="field"><label>이모지</label><button class="emoji-btn" id="emoji-btn" onclick="togglePicker(event)">☕</button></div>
+      <button class="btn-add" onclick="addProduct()">+ 상품 등록</button>
+    </div>
+  </div>
+  <div class="sec-title">전체 상품 목록</div>
+  <table class="prod-table">
+    <thead><tr><th></th><th>상품명</th><th>카테고리</th><th>가격</th><th>재고</th><th>수량 수정</th><th>수정</th><th>삭제</th></tr></thead>
+    <tbody id="inv-tbody"></tbody>
+  </table>
+</div>
+
+<!-- ══ 거래 내역 뷰 ══ -->
+<div class="view" id="view-cancel">
+  <div style="display:flex;justify-content:space-between;align-items:flex-end;flex-wrap:wrap;gap:10px;margin-bottom:1rem">
+    <div>
+      <div class="sec-title" style="margin-bottom:4px">거래 내역</div>
+      <div style="font-size:13px;color:var(--muted)">블록을 클릭하면 상세 내역 및 취소 기능을 사용할 수 있어요</div>
+    </div>
+    <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+      <input type="date" class="date-input" id="cancel-filter-date" onchange="renderCancelView()" style="font-size:13px">
+      <div style="display:flex;gap:4px">
+        <button class="period-btn active" id="cfa" onclick="setCancelFilter('all',this)">전체</button>
+        <button class="period-btn" id="cfn" onclick="setCancelFilter('active',this)">정상</button>
+        <button class="period-btn" id="cfc" onclick="setCancelFilter('cancelled',this)">취소됨</button>
+      </div>
+    </div>
+  </div>
+  <div id="cancel-summary" style="display:flex;gap:10px;margin-bottom:1.25rem;flex-wrap:wrap"></div>
+  <div id="cancel-list"></div>
+</div>
+
+<!-- ══ 거래 상세 팝업 ══ -->
+<div class="cancel-modal-overlay" id="tx-detail-modal" style="z-index:1300">
+  <div class="cancel-modal" style="width:440px;max-height:88vh;overflow-y:auto;text-align:left;padding:1.5rem">
+    <!-- 헤더 -->
+    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:1rem">
+      <div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)">거래 상세</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:3px" id="txd-time"></div>
+      </div>
+      <button onclick="closeTxDetail()" style="font-size:20px;color:var(--muted);background:none;border:none;cursor:pointer;line-height:1;padding:2px 6px">✕</button>
+    </div>
+    <!-- 상태 + 거래금액 -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding-bottom:1rem;margin-bottom:1rem;border-bottom:1px solid var(--border)">
+      <div id="txd-status"></div>
+      <div style="text-align:right">
+        <div style="font-size:11px;color:var(--muted);margin-bottom:2px">거래 금액</div>
+        <div style="font-size:20px;font-weight:700;color:var(--accent)" id="txd-total-amt"></div>
+      </div>
+    </div>
+    <!-- 안내 -->
+    <div id="txd-guide" style="font-size:12px;color:var(--muted);margin-bottom:10px">
+      ☑ 상품을 체크하면 수량 조절 후 일부만 취소할 수 있어요
+    </div>
+    <!-- 상품 목록 -->
+    <div id="txd-items" style="margin-bottom:1rem"></div>
+    <!-- 선택 취소 금액 바 -->
+    <div class="txd-sel-bar" id="txd-sel-bar">
+      <div>
+        <div style="font-size:11px;color:var(--danger);margin-bottom:2px">취소 예정 금액</div>
+        <div style="font-size:16px;font-weight:700;color:var(--danger)" id="txd-cancel-amt">0원</div>
+      </div>
+      <div style="font-size:12px;color:var(--muted)" id="txd-cancel-cnt"></div>
+    </div>
+    <!-- 버튼 -->
+    <div id="txd-actions"></div>
+  </div>
+</div>
+
+<!-- ══ 판매 기록 뷰 ══ -->
+
+<div class="view" id="view-history">
+
+  <!-- 상단 요약 통계 -->
+  <div class="stat-grid" id="stat-grid"></div>
+
+  <!-- 기간 필터 -->
+  <div class="flex-btw" style="align-items:flex-end">
+    <div class="filter-bar" style="margin-bottom:0;flex-wrap:nowrap">
+      <button class="period-btn active" onclick="setPeriod('all',this)">전체</button>
+      <button class="period-btn" onclick="setPeriod('today',this)">오늘</button>
+      <button class="period-btn" onclick="setPeriod('week',this)">이번 주</button>
+      <button class="period-btn" onclick="setPeriod('month',this)">이번 달</button>
+      <button class="period-btn" onclick="setPeriod('custom',this)">직접 선택</button>
+    </div>
+    <button class="btn-export" onclick="exportCSV()">CSV 내보내기</button>
+  </div>
+
+  <!-- 직접 날짜 선택 -->
+  <div id="custom-range" style="display:none;margin-top:10px;display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+    <div class="field" style="margin:0"><label>시작일</label><input type="date" class="date-input" id="date-from"></div>
+    <span style="color:var(--muted);margin-top:18px">~</span>
+    <div class="field" style="margin:0"><label>종료일</label><input type="date" class="date-input" id="date-to"></div>
+    <button class="btn-add" style="margin-top:18px" onclick="applyCustomRange()">적용</button>
+  </div>
+
+  <div style="margin-top:1.25rem">
+    <!-- 일자별 테이블 -->
+    <div class="sec-title">일자별 판매 현황</div>
+    <table class="day-table" id="day-table">
+      <thead>
+        <tr>
+          <th style="width:36px"></th>
+          <th>날짜</th>
+          <th>거래 건수</th>
+          <th>판매 수량</th>
+          <th>매출</th>
+          <th>비율</th>
+        </tr>
+      </thead>
+      <tbody id="day-tbody"></tbody>
+    </table>
+  </div>
+</div>
+
+<!-- 이모지 피커 -->
+<div class="emoji-picker" id="emoji-picker"></div>
+
+<!-- 상품 수정 모달 -->
+<div class="edit-modal-overlay" id="edit-modal-overlay">
+  <div class="edit-modal">
+    <div class="edit-modal-title">
+      <span>상품 수정</span>
+      <button class="edit-modal-close" onclick="closeEditModal()">✕</button>
+    </div>
+    <div class="edit-field">
+      <label>이모지</label>
+      <div class="edit-emoji-row">
+        <button class="emoji-btn" id="edit-emoji-btn" onclick="togglePickerEdit(event)">☕</button>
+        <span style="font-size:12px;color:var(--muted)">클릭해서 변경</span>
+      </div>
+    </div>
+    <div class="edit-field">
+      <label>상품명</label>
+      <input type="text" id="edit-name" placeholder="상품명">
+    </div>
+    <div class="edit-field">
+      <label>가격 (원)</label>
+      <input type="number" id="edit-price" placeholder="0" min="0">
+    </div>
+    <div class="edit-field">
+      <label>재고 수량</label>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="number" id="edit-stock" placeholder="0" min="0" style="flex:1">
+        <button class="inf-toggle-edit" id="edit-inf-btn" onclick="toggleInfEdit()">∞ 무제한</button>
+      </div>
+    </div>
+    <div class="edit-field">
+      <label>카테고리</label>
+      <div class="edit-cat-grid" id="edit-cat-grid"></div>
+    </div>
+    <div class="edit-actions">
+      <button class="btn-cancel-edit" onclick="closeEditModal()">취소</button>
+      <button class="btn-save" onclick="saveProductEdit()">저장</button>
+    </div>
+  </div>
+</div>
+
+<!-- 결제 모달 -->
+<div class="modal-overlay" id="pay-modal">
+  <div class="modal">
+    <div class="modal-icon">✅</div>
+    <div class="modal-title">결제 완료</div>
+    <div class="modal-amount" id="modal-amount"></div>
+    <div class="modal-items" id="modal-items"></div>
+    <button class="btn-mc" onclick="closeModal()">확인</button>
+    <button class="btn-mc-cancel" onclick="openCancelFromPayModal()">🚫 방금 결제 취소</button>
+  </div>
+</div>
+
+<!-- 취소 확인 모달 -->
+<div class="cancel-modal-overlay" id="cancel-modal">
+  <div class="cancel-modal">
+    <div class="cancel-icon">🚫</div>
+    <div class="cancel-title">결제를 취소할까요?</div>
+    <div class="cancel-desc">취소하면 재고가 복구되고<br>판매 기록에 [취소]로 표시돼요</div>
+    <div class="cancel-amount" id="cancel-amount"></div>
+    <div class="cancel-items" id="cancel-items"></div>
+    <div class="cancel-actions">
+      <button class="btn-no" onclick="closeCancelModal()">돌아가기</button>
+      <button class="btn-yes" onclick="confirmCancel()">취소 확정</button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast"></div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
